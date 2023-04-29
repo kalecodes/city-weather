@@ -1,3 +1,9 @@
+var searchHistory = [];
+
+var searchBtnEl = document.querySelector("#search-btn");
+var citySearchEl = document.querySelector("#city-search");
+var searchHistoryEl = document.querySelector("#history");
+
 var currentWeatherEl = document.querySelector("#today");
 var forecastEl = document.querySelector("#forecast");
 
@@ -28,7 +34,6 @@ var getWeather = function(cityName, lat, lon) {
     fetch(apiUrl).then(function(response) {
         if (response.ok) {
             response.json().then(function(data) {
-                console.log(data);
 
                 displayWeather(cityName, data);
             });
@@ -60,7 +65,7 @@ var displayToday = function(cityName, data) {
     headerSpan.className = "d-inline-flex align-items-center py-1";
     var cityNameEl = document.createElement("h1");
     var iconEl = document.createElement("img");
-    iconEl.setAttribute("src", "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + ".png")
+    iconEl.setAttribute("src", "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png")
     cityNameEl.textContent = cityName + " ";
 
     headerSpan.appendChild(cityNameEl);
@@ -106,7 +111,7 @@ var displayForecast = function(data) {
         cardHeaderEl.textContent = date;
 
         var cardIconEl = document.createElement("img");
-        cardIconEl.setAttribute("src", "https://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + ".png");
+        cardIconEl.setAttribute("src", "https://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + "@2x.png");
 
         var cardTempEl = document.createElement("p");
         cardTempEl.textContent = data.daily[i].temp.day + " °F";
@@ -129,4 +134,38 @@ var displayForecast = function(data) {
     forecastEl.appendChild(cardHolderEl);
 };
 
-translateCity("Richmond");
+searchBtnEl.addEventListener("click", function() {
+    var city = citySearchEl.value.trim();
+    citySearchEl.value = "";
+    translateCity(city);
+    saveSearch(city);
+});
+
+var saveSearch = function(city) {
+    searchHistory.unshift(city);
+
+    localStorage.setItem("searched cities", JSON.stringify(searchHistory));
+
+    loadSearchHistory();
+}
+
+var loadSearchHistory = function() {
+    searchHistory = JSON.parse(localStorage.getItem("searched cities"));
+
+    if (!searchHistory) {
+        searchHistory = [];
+    }
+
+    // clear previous
+    searchHistoryEl.textContent = "";
+
+    for (var i = 0; i < searchHistory.length && i < 7; i++) {
+        var historyEl = document.createElement("button");
+        historyEl.textContent = searchHistory[i];
+        historyEl.className = "btn btn-secondary btn-lg my-1 d-block";
+
+        searchHistoryEl.appendChild(historyEl);
+    }
+}
+
+loadSearchHistory();
