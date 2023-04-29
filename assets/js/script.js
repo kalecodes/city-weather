@@ -86,7 +86,47 @@ var displayToday = function(cityName, data) {
 };
 
 var displayForecast = function(data) {
+    // clear previous forecast
+    forecastEl.textContent = "";
 
+    var forecastHeaderEl = document.createElement("h3");
+    forecastHeaderEl.className = "p-2";
+    forecastHeaderEl.textContent = "5-Day Forecast:";
+
+    var cardHolderEl = document.createElement("div");
+    cardHolderEl.className = "d-inline-flex justify-content-between pb-4";
+
+    // create cards for each day
+    for (var i = 0; i < 5; i++) {
+        var cardEl = document.createElement("div");
+        cardEl.className = "card p-2";
+
+        var date = moment().add(i + 1, 'days').format("MMM Do, YY");
+        var cardHeaderEl = document.createElement("h5");
+        cardHeaderEl.textContent = date;
+
+        var cardIconEl = document.createElement("img");
+        cardIconEl.setAttribute("src", "https://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + ".png");
+
+        var cardTempEl = document.createElement("p");
+        cardTempEl.textContent = data.daily[i].temp.day + " °F";
+
+        var cardWindEl = document.createElement("p");
+        cardWindEl.textContent = data.daily[i].wind_speed + " MPH";
+
+        var cardHumidityEl = document.createElement("p");
+        cardHumidityEl.textContent = data.daily[i].humidity + "%";
+
+        cardEl.appendChild(cardHeaderEl);
+        cardEl.appendChild(cardIconEl);
+        cardEl.appendChild(cardTempEl);
+        cardEl.appendChild(cardWindEl);
+        cardEl.appendChild(cardHumidityEl);
+        cardHolderEl.appendChild(cardEl);
+    }
+
+    forecastEl.appendChild(forecastHeaderEl);
+    forecastEl.appendChild(cardHolderEl);
 };
 
 translateCity("Richmond");
